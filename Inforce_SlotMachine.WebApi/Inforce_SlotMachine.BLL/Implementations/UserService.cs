@@ -18,14 +18,14 @@ namespace Inforce_SlotMachine.BLL.Implementations
             _mapper = mapper;
         }
 
-        public UserDto GetUser(int id)
+        public async Task<UserDto> GetUser(int id)
         {
-            return _mapper.Map<UserDto>(GetUserOrThrowException(id));
+            return _mapper.Map<UserDto>(await GetUserOrThrowException(id));
         }
 
-        public UserDto UpdateBalance(UpdateBalance model)
+        public async Task<UserDto> UpdateBalance(UpdateBalance model)
         {
-            var user = GetUserOrThrowException(model.PlayerId);
+            var user = await GetUserOrThrowException(model.PlayerId);
 
             user.Balance += model.Balance;
 
@@ -34,9 +34,12 @@ namespace Inforce_SlotMachine.BLL.Implementations
             return _mapper.Map<UserDto>(user);
         }
 
-        public UserDto UpdateSlotMachineFields(UpdateSlotMachine model)
+        public async Task<UserDto> UpdateSlotMachineFields(UpdateSlotMachine model)
         {
-            var user = GetUserOrThrowException(model.PlayerId);
+            if (model.Length <= 1)
+                throw new ValidationException("Invalid slots count");
+
+            var user = await GetUserOrThrowException(model.PlayerId);
 
             user.SlotMachineLength = model.Length;
 
@@ -45,7 +48,7 @@ namespace Inforce_SlotMachine.BLL.Implementations
             return _mapper.Map<UserDto>(user);
         }
 
-        private User GetUserOrThrowException(int id)
+        private async Task<User> GetUserOrThrowException(int id)
         {
             var user = _db.Users.FirstOrDefault(u => u.Id == id);
 

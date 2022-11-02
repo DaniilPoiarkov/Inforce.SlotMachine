@@ -4,6 +4,6 @@ namespace Inforce_SlotMachine.BLL.Abstract
 {
     public interface ISpinService
     {
-        SpitResult Spin(SpinBet bet);
+        Task<SpitResult> Spin(SpinBet bet);
     }
 }

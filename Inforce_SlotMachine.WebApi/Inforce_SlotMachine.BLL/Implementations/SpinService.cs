@@ -13,17 +13,29 @@ namespace Inforce_SlotMachine.BLL.Implementations
             _db = db;
         }
 
-        public SpitResult Spin(SpinBet bet)
+        public async Task<SpitResult> Spin(SpinBet bet)
         {
+            if (bet.Bet <= 0)
+                throw new ValidationException("Bet cannot be lower or equal 0");
+
             var user = _db.Users.FirstOrDefault(u => u.Id == bet.PlayerId);
 
             if (user == null)
                 throw new NotFoundException("User");
 
+            if (bet.Bet > user.Balance)
+                throw new ValidationException("Bet is higher than balance");
+
+            user.Balance -= bet.Bet;
+
             var result = GetSlotMachineResult(user.SlotMachineLength);
             var winSum = CountWinBalance(result, bet.Bet);
 
-            return new(bet.PlayerId, winSum, result);
+            user.Balance += winSum;
+
+            //_db.SaveChanges();
+
+            return new(bet.PlayerId, user.Balance, result);
         }
 
         private static int[] GetSlotMachineResult(int length)
@@ -32,7 +44,7 @@ namespace Inforce_SlotMachine.BLL.Implementations
             var result = new int[length];
 
             for(int i = 0; i < length; i++)
-                result[i] = rnd.Next(1, 10);
+                result[i] = rnd.Next(0, 10);
 
             return result;
         }

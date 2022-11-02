@@ -4,6 +4,5 @@
     {
         public decimal Bet { get; set; }
         public int PlayerId { get; set; }
-        public int[]? Prediction { get; set; }
     }
 }

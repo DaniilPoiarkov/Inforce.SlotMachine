@@ -5,8 +5,8 @@ namespace Inforce_SlotMachine.BLL.Abstract
 {
     public interface IUserService
     {
-        UserDto UpdateBalance(UpdateBalance balance);
-        UserDto GetUser(int id);
-        UserDto UpdateSlotMachineFields(UpdateSlotMachine model);
+        Task<UserDto> UpdateBalance(UpdateBalance balance);
+        Task<UserDto> GetUser(int id);
+        Task<UserDto> UpdateSlotMachineFields(UpdateSlotMachine model);
     }
 }
