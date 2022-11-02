@@ -1,0 +1,14 @@
+.vscode
+.vs
+
+Inforce_SlotMachine.BLL/obj
+Inforce_SlotMachine.BLL/bin
+
+Inforce_SlotMachine.Common/obj
+Inforce_SlotMachine.common/bin
+
+Inforce_SlotMachine.DAL/obj
+Inforce_SlotMachine.DAL/bin
+
+Inforce_SlotMachine.WebApi/obj
+Inforce_SlotMachine.WebApi/bin
