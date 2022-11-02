@@ -1,4 +1,5 @@
 ﻿using Inforce_SlotMachine.Common.Exceptions;
+using Newtonsoft.Json;
 using System.Net;
 using System.Text;
 
@@ -44,8 +45,7 @@ namespace Inforce_SlotMachine.WebApi.Middlewares
             context.Response.StatusCode = (int)statusCode;
             context.Response.ContentType = "application/json";
 
-            //await context.Response.WriteAsync(JsonConvert.SerializeObject(errorBody)); //TODO: Add NewtonsJson.Bson nuGet
-            await context.Response.WriteAsync(ex.Message);
+            await context.Response.WriteAsync(JsonConvert.SerializeObject(errorBody));
         }
 
         private static string BuildErrorMessage(Exception? ex)

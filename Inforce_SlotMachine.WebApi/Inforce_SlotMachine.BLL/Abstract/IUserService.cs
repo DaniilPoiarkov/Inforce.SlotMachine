@@ -8,5 +8,6 @@ namespace Inforce_SlotMachine.BLL.Abstract
         Task<UserDto> UpdateBalance(UpdateBalance balance);
         Task<UserDto> GetUser(int id);
         Task<UserDto> UpdateSlotMachineFields(UpdateSlotMachine model);
+        Task<UserDto> CreateUser(UserDto user);
     }
 }

@@ -5,6 +5,7 @@ using Inforce_SlotMachine.Common.DTOs;
 using Inforce_SlotMachine.Common.Entities;
 using Inforce_SlotMachine.Common.Exceptions;
 using Inforce_SlotMachine.DAL;
+using MongoDB.Driver;
 
 namespace Inforce_SlotMachine.BLL.Implementations
 {
@@ -29,9 +30,12 @@ namespace Inforce_SlotMachine.BLL.Implementations
 
             user.Balance += model.Balance;
 
-            //_db.SaveChanges();
-
-            return _mapper.Map<UserDto>(user);
+            return _mapper.Map<UserDto>(
+                await _db.Users.FindOneAndReplaceAsync(
+                    u => u.Id == model.PlayerId,
+                    user,
+                    new() { ReturnDocument = ReturnDocument.After }
+                ));
         }
 
         public async Task<UserDto> UpdateSlotMachineFields(UpdateSlotMachine model)
@@ -43,14 +47,23 @@ namespace Inforce_SlotMachine.BLL.Implementations
 
             user.SlotMachineLength = model.Length;
 
-            //_db.SaveChanges();
+            return _mapper.Map<UserDto>(
+                await _db.Users.FindOneAndReplaceAsync(
+                    u => u.Id == model.PlayerId, 
+                    user, 
+                    new() { ReturnDocument = ReturnDocument.After }
+                ));
+        }
 
-            return _mapper.Map<UserDto>(user);
+        public async Task<UserDto> CreateUser(UserDto user)
+        {
+            await _db.Users.InsertOneAsync(_mapper.Map<User>(user));
+            return user;
         }
 
         private async Task<User> GetUserOrThrowException(int id)
         {
-            var user = _db.Users.FirstOrDefault(u => u.Id == id);
+            var user = await _db.Users.Find(u => u.Id == id).FirstOrDefaultAsync();
 
             if (user == null)
                 throw new NotFoundException("User");

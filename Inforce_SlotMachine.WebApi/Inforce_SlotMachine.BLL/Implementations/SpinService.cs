@@ -1,7 +1,9 @@
 ﻿using Inforce_SlotMachine.BLL.Abstract;
 using Inforce_SlotMachine.Common.AuxiliaryModels;
+using Inforce_SlotMachine.Common.Entities;
 using Inforce_SlotMachine.Common.Exceptions;
 using Inforce_SlotMachine.DAL;
+using MongoDB.Driver;
 
 namespace Inforce_SlotMachine.BLL.Implementations
 {
@@ -15,16 +17,10 @@ namespace Inforce_SlotMachine.BLL.Implementations
 
         public async Task<SpitResult> Spin(SpinBet bet)
         {
-            if (bet.Bet <= 0)
-                throw new ValidationException("Bet cannot be lower or equal 0");
+            var user = await _db.Users.Find(u => u.Id == bet.PlayerId).FirstOrDefaultAsync()
+                ?? throw new NotFoundException("User");
 
-            var user = _db.Users.FirstOrDefault(u => u.Id == bet.PlayerId);
-
-            if (user == null)
-                throw new NotFoundException("User");
-
-            if (bet.Bet > user.Balance)
-                throw new ValidationException("Bet is higher than balance");
+            ValidateAndThrow(bet.Bet, user);
 
             user.Balance -= bet.Bet;
 
@@ -33,9 +29,18 @@ namespace Inforce_SlotMachine.BLL.Implementations
 
             user.Balance += winSum;
 
-            //_db.SaveChanges();
+            await _db.Users.FindOneAndReplaceAsync(u => u.Id == bet.PlayerId, user, new() { ReturnDocument = ReturnDocument.After });
 
             return new(bet.PlayerId, user.Balance, result);
+        }
+
+        private static void ValidateAndThrow(decimal bet, User user)
+        {
+            if (bet <= 0)
+                throw new ValidationException("Bet cannot be lower or equal 0");
+                
+            if (bet > user.Balance)
+                throw new ValidationException("Bet is higher than balance");
         }
 
         private static int[] GetSlotMachineResult(int length)
@@ -52,17 +57,16 @@ namespace Inforce_SlotMachine.BLL.Implementations
         private static decimal CountWinBalance(int[] result, decimal bet)
         {
             int sequence = 0;
-            var keyVal = result[0];
 
             for (int i = 0; i < result.Length; i++)
             {
-                if (result[i] == keyVal)
+                if (result[i] == result[0])
                     sequence += 1;
                 else
                     break;
             }
 
-            return sequence * keyVal * bet;
+            return sequence * result[0] * bet;
         }
     }
 }
