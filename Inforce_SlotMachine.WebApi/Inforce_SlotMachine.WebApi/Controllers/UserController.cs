@@ -1,6 +1,6 @@
 ﻿using Inforce_SlotMachine.BLL.Abstract;
 using Inforce_SlotMachine.Common.AuxiliaryModels;
-using Microsoft.AspNetCore.Http;
+using Inforce_SlotMachine.Common.DTOs;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Inforce_SlotMachine.WebApi.Controllers
@@ -17,7 +17,7 @@ namespace Inforce_SlotMachine.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetUserById(int id)
+        public async Task<IActionResult> GetUserById(string id)
         {
             return Ok(await _userService.GetUser(id));
         }
@@ -32,6 +32,12 @@ namespace Inforce_SlotMachine.WebApi.Controllers
         public async Task<IActionResult> UpdateSlotsCount([FromBody] UpdateSlotMachine model)
         {
             return Ok(await _userService.UpdateSlotMachineFields(model));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateUser([FromBody] UserDto user)
+        {
+            return Ok(await _userService.CreateUser(user));
         }
     }
 }

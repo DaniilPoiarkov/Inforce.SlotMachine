@@ -29,7 +29,7 @@ namespace Inforce_SlotMachine.BLL.Implementations
 
             user.Balance += winSum;
 
-            await _db.Users.FindOneAndReplaceAsync(u => u.Id == bet.PlayerId, user, new() { ReturnDocument = ReturnDocument.After });
+            user = await _db.Users.FindOneAndReplaceAsync(u => u.Id == bet.PlayerId, user, new() { ReturnDocument = ReturnDocument.After });
 
             return new(bet.PlayerId, user.Balance, result);
         }

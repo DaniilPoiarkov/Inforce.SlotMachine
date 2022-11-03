@@ -19,7 +19,7 @@ namespace Inforce_SlotMachine.BLL.Implementations
             _mapper = mapper;
         }
 
-        public async Task<UserDto> GetUser(int id)
+        public async Task<UserDto> GetUser(string id)
         {
             return _mapper.Map<UserDto>(await GetUserOrThrowException(id));
         }
@@ -57,11 +57,21 @@ namespace Inforce_SlotMachine.BLL.Implementations
 
         public async Task<UserDto> CreateUser(UserDto user)
         {
+            ValidateAndThrow(user);
+
             await _db.Users.InsertOneAsync(_mapper.Map<User>(user));
             return user;
         }
 
-        private async Task<User> GetUserOrThrowException(int id)
+        private static void ValidateAndThrow(UserDto user)
+        {
+            if (user.Balance < 0)
+                throw new ValidationException("Balance can not be lower than 0");
+            if (user.SlotMachineLength <= 1)
+                throw new ValidationException("Slots count can not be lower or equal to 1");
+        }
+
+        private async Task<User> GetUserOrThrowException(string id)
         {
             var user = await _db.Users.Find(u => u.Id == id).FirstOrDefaultAsync();
 

@@ -1,12 +1,13 @@
-﻿namespace Inforce_SlotMachine.Common.AuxiliaryModels
+﻿
+namespace Inforce_SlotMachine.Common.AuxiliaryModels
 {
     public class SpitResult
     {
-        public int PlayedId { get; set; }
+        public string PlayedId { get; set; } = "";
         public decimal Balance { get; set; }
         public int[]? Result { get; set; }
 
-        public SpitResult(int playedId, decimal balance, int[]? result)
+        public SpitResult(string playedId, decimal balance, int[]? result)
         {
             PlayedId = playedId;
             Balance = balance;
