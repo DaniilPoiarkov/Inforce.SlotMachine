@@ -25,7 +25,7 @@ namespace Inforce_SlotMachine.BLL.Implementations
             user.Balance -= bet.Bet;
 
             var result = GetSlotMachineResult(user.SlotMachineLength);
-            var winSum = CountWinBalance(result, bet.Bet);
+            var winSum = CalculateWinnings(result, bet.Bet);
 
             user.Balance += winSum;
 
@@ -54,7 +54,7 @@ namespace Inforce_SlotMachine.BLL.Implementations
             return result;
         }
 
-        private static decimal CountWinBalance(int[] result, decimal bet)
+        private static decimal CalculateWinnings(int[] result, decimal bet)
         {
             int sequence = 0;
 
